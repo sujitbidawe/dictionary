@@ -1,46 +1,70 @@
 #! /bin/bash
 
-#choice="y"
-#yes="y"
 count=1
+minCount=9999
 LIMIT=10
-#minFrequentFace=1000
-#maxFrequentFace=-1
 
 declare -A diceDict
 
 diceDict=( [face1]=0 [face2]=0 [face3]=0 [face4]=0 [face5]=0 [face6]=0 )
 
-while [[ ${diceDict[face1]} -ne $LIMIT && ${diceDict[face2]} -ne $LIMIT && ${diceDict[face3]} -ne $LIMIT && ${diceDict[face4]} -ne $LIMIT && ${diceDict[face5]} -ne $LIMIT && ${diceDict[face6]} -ne $LIMIT ]]
+while [[ ${diceDict[face$dice]} -ne $LIMIT ]]
 do
-		dice=$(( RANDOM%6+1 ))
+      dice=$(( RANDOM%6+1 ))
 
-#		echo $dice
+      case $dice in
+				1)
+            diceDict["face1"]=$((${diceDict[face1]}+1)) ;;
 
-		if [[ $dice -eq 1 ]]
-		then
-				diceDict["face1"]=$((${diceDict[face1]}+1))
-		elif [[ $dice -eq 2 ]]
-      then
-            diceDict["face2"]=$((${diceDict[face2]}+1))
-		elif [[ $dice -eq 3 ]]
-      then
-            diceDict["face3"]=$((${diceDict[face3]}+1))
-		elif [[ $dice -eq 4 ]]
-      then
-            diceDict["face4"]=$((${diceDict[face4]}+1))
-		elif [[ $dice -eq 5 ]]
-      then
-            diceDict["face5"]=$((${diceDict[face5]}+1))
-		elif [[ $dice -eq 6 ]]
-      then
-            diceDict["face6"]=$((${diceDict[face6]}+1))
-		fi
+				2)
+            diceDict["face2"]=$((${diceDict[face2]}+1)) ;;
 
-#		read -p "Do you want to roll the dice again? enter y for yes and anything else for no" choice
+				3)
+            diceDict["face3"]=$((${diceDict[face3]}+1)) ;;
+
+      		4)
+            diceDict["face4"]=$((${diceDict[face4]}+1)) ;;
+
+				5)
+            diceDict["face5"]=$((${diceDict[face5]}+1)) ;;
+
+				6)
+            diceDict["face6"]=$((${diceDict[face6]}+1)) ;;
+      esac
+
+      # to get max frequent face
+      if [[ ${diceDict[face$dice]} -eq $LIMIT ]]
+      then
+            maxFrequentFace=face$dice
+      fi
+
 done
 
+# for printing key:value pairs
 for key in "${!diceDict[@]}"
 do
-		echo $key: ${diceDict[$key]}
+		echo "$key: ${diceDict[$key]}"
 done
+
+# for finding which face has minimum count
+for key in "${!diceDict[@]}"
+do
+		if [[ ${diceDict[$key]} -lt $minCount ]]
+		then
+				minCount=${diceDict[$key]}
+		fi
+		done
+
+echo "Most frequent face with count ${diceDict[$maxFrequentFace]}: $maxFrequentFace"
+echo -n "Least frequent face/faces with count $minCount: "
+
+# for printing faces with minimum values
+for key in "${!diceDict[@]}"
+do
+		if [[ ${diceDict[$key]} -eq $minCount ]]
+		then
+				echo -n "$key "
+		fi
+done
+
+echo ""
